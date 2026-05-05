@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="h4 font-weight-bold text-dark mb-0">
-            {{ __('Create Company') }}
+            {{ __('Generate Short URL') }}
         </h2>
     </x-slot>
 
@@ -10,18 +10,18 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <form action="{{ route('companies.store') }}" method="POST">
+                        <form action="{{ route('short-urls.store') }}" method="POST">
                             @csrf
                             <div class="form-group">
-                                <label for="name">Company Name</label>
-                                <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}">
-                                @error('name')
-                                    <span class="text-danger d-block mt-1">{{ $message }}</span>
+                                <label for="url">Long URL</label>
+                                <input type="text" name="url" id="url" class="form-control" value="{{ old('url') }}">
+                                @error('url')
+                                    <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
                             <div class="form-group mt-3">
-                                <a href="{{ route('companies.index') }}" class="btn btn-secondary">Cancel</a>
-                                <button type="submit" class="btn btn-primary">Create</button>
+                                <a href="{{ route('short-urls.index') }}" class="btn btn-secondary">Cancel</a>
+                                <button type="submit" class="btn btn-primary">Generate</button>
                             </div>
                         </form>
                     </div>

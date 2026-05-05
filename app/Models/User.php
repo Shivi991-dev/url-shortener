@@ -53,4 +53,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Companies::class, 'companies_id');
     }
+
+    public function shortUrls()
+    {
+        return $this->hasMany(ShortUrls::class);
+    }
 }

@@ -18,7 +18,10 @@
                             @method('PUT')
                             <div class="form-group">
                                 <label for="name">Company Name</label>
-                                <input type="text" name="name" id="name" class="form-control" value="{{ $company->name }}">
+                                <input type="text" name="name" id="name" class="form-control" value="{{ old('name', $company->name) }}">
+                                @error('name')
+                                    <span class="text-danger d-block mt-1">{{ $message }}</span>
+                                @enderror
                             </div>
                             <div class="form-group mt-3">
                                 <a href="{{ route('companies.index') }}" class="btn btn-secondary">Cancel</a>

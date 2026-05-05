@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClientsController;
 use App\Http\Controllers\CompaniesController;
+use App\Http\Controllers\ShortUrlsController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -23,6 +24,12 @@ Route::middleware('auth')->group(function () {
 
     // Clients routes
     Route::resource('clients', ClientsController::class);
+
+    // Short urls routes
+    Route::resource('short-urls', ShortUrlsController::class);
 });
+
+// Publicly Accessible Route
+Route::get('/s/{shortUrl}', [ShortUrlsController::class, 'redirectToPublicLongUrl'])->name('short-urls.redirect');
 
 require __DIR__.'/auth.php';

@@ -30,7 +30,7 @@ class ClientsController extends Controller
     {
         $this->checkRoleBasedAuthorization(['super admin', 'admin']);
 
-        $companies = Companies::all();
+        $companies = auth()->user()->hasRole('super admin') ? Companies::all() : null;
         if(auth()->user()->hasRole('super admin')) {
             $roles = ['admin'];
         } elseif(auth()->user()->hasRole('admin')) {
@@ -43,19 +43,26 @@ class ClientsController extends Controller
     {
         $this->checkRoleBasedAuthorization(['super admin', 'admin']);
 
-        $request->validate([
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required'],
             'role' => 'required|exists:roles,name',
-            'company' => 'required|exists:companies,id',
-        ]);
+        ];
+
+        if (auth()->user()->hasRole('super admin')) {
+            $rules['company'] = 'required|exists:companies,id';
+        }
+
+        $request->validate($rules);
+
+        $companyId = auth()->user()->hasRole('super admin') ? (int) $request->company : (int) auth()->user()->companies_id;
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => $request->password,
-            'companies_id' => (int) $request->company,
+            'companies_id' => $companyId,
         ]);
 
         $user->syncRoles([$request->role]);
@@ -94,18 +101,25 @@ class ClientsController extends Controller
     {
         $this->checkRoleBasedAuthorization(['super admin', 'admin']);
 
-        $request->validate([
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique('users')->ignore($client->id)],
             'password' => ['nullable'],
             'role' => 'required|exists:roles,name',
-            'company' => 'required|exists:companies,id',
-        ]);
+        ];
+
+        if (auth()->user()->hasRole('super admin')) {
+            $rules['company'] = 'required|exists:companies,id';
+        }
+
+        $request->validate($rules);
+
+        $companyId = auth()->user()->hasRole('super admin') ? (int) $request->company : (int) auth()->user()->companies_id;
         
         $client->update([
             'name' => $request->name,
             'email' => $request->email,
-            'companies_id' => (int) $request->company,
+            'companies_id' => $companyId,
         ]);
         
         if ($request->filled('password')) {
