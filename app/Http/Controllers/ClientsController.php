@@ -74,12 +74,12 @@ class ClientsController extends Controller
     {
         $this->checkRoleBasedAuthorization(['super admin', 'admin']);
 
-        if (! $client->hasRole('admin')) {
-            abort(404);
+        if(!auth()->user()->hasRole('super admin')) {
+            if($client->companies_id != auth()->user()->companies_id) {
+                abort(403);
+            }
         }
-
-        $companies = Companies::all();
-        return view('superadmin.clients.show', compact('client', 'companies'));
+        return view('superadmin.clients.show', compact('client'));
     }
 
     public function edit(User $client)
@@ -100,6 +100,12 @@ class ClientsController extends Controller
     public function update(Request $request, User $client)
     {
         $this->checkRoleBasedAuthorization(['super admin', 'admin']);
+
+        if(!auth()->user()->hasRole('super admin')) {
+            if($client->companies_id != auth()->user()->companies_id) {
+                abort(403);
+            }
+        }
 
         $rules = [
             'name' => ['required', 'string', 'max:255'],
@@ -135,8 +141,15 @@ class ClientsController extends Controller
     {
         $this->checkRoleBasedAuthorization(['super admin', 'admin']);
 
-        $client->delete();
-
+        if(auth()->user()->hasRole('super admin')) {
+            $client->delete();
+        } else {
+            if($client->companies_id != auth()->user()->companies_id) {
+                abort(403);
+            }
+            $client->delete();
+        }
+        
         return redirect()->route('clients.index')->with('success', 'Client deleted successfully');
     }
 }
